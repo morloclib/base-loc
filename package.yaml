@@ -1,0 +1,11 @@
+name: base-loc
+version: 0.0.0
+homepage: https://github.com/morloc-lib/base-loc
+synopsis: Type signatures that are imported and implemented in the language-specific bases
+description: This is totally experimental
+category: language-base
+license: MIT
+author: "Zebulun Arendsee"
+maintainer: "zbwrnz@gmail.com"
+github: https://github.com/morloc-lib/base-loc
+bug-reports: https://github.com/morloc-lib/base-loc

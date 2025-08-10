@@ -1,0 +1,146 @@
+module conventions (*)
+
+-- NOTE: `forall` statements that explicitly order the generic terms are necessary
+-- when the parse order of the generic terms does not match the template argument
+-- order of the C++ implementations. For consistency, I will explicitly declare the
+-- terms in all generic functions.
+
+import types
+
+-- {-
+--
+-- This package is too big. It is hard to draw a line at what fits in and what
+-- doesn't. So much depends on domain. So it may make more sense to break
+-- everything down into smaller packages.
+--
+--  * math
+--  * stat
+--  * ml
+--  * combinators
+--  * containers
+--    * list
+--    * tuple
+--    * map
+--    * set
+--    * maybe
+--    * either
+--  * binary
+--  * string
+--  * text
+--
+-- -}
+
+------------- Effects
+sleep a :: Real -> a -> a
+
+------------- Control
+-- Whether this is eager or lazy depends on language
+
+ifelse a :: Bool -> a -> a -> a
+
+-- like ifelse, but guaranteed to be lazy
+branch a b :: (a -> Bool) -> (a -> b) -> (a -> b) -> a -> b
+run a :: (() -> a) -> a
+
+------------- Combinators and functions
+id a :: a -> a
+seq a b :: a -> b -> b
+const a b :: a -> b -> a
+fst a b :: (a, b) -> a
+snd a b :: (a, b) -> b
+
+{- While I don't want to make special accessors for every damn tuple, triples
+are special. They represent relations between things. I am tempted to names
+these three functions (s, p, and o) for "subject", "predicate", and
+"object". This is the convention in SPARQL circles. Anyone who wants to think of
+them that way, though, is free to use aliases. In the meantime, I will give them
+unopinionated names. -}
+fst3 a b c :: (a, b, c) -> a
+snd3 a b c :: (a, b, c) -> b
+thr3 a b c :: (a, b, c) -> c
+
+tuple a b :: a -> b -> (a, b)
+curry a b c :: ((a, b) -> c) -> a -> b -> c
+uncurry a b c :: (a -> b -> c) -> (a, b) -> c
+onSnd a b b' :: (b -> b') -> (a, b) -> (a, b')
+onFst a b a' :: (a -> a') -> (a, b) -> (a', b)
+toSnd a b :: (a -> b) -> a -> (a, b)
+toFst a b :: (a -> b) -> a -> (b, a)
+
+------------- Strings
+unlines :: [Str] -> Str
+words :: Str -> [Str]
+unwords :: [Str] -> Str
+paste :: Str -> [Str] -> Str
+lines :: Str -> [Str]
+lengthS :: Str -> Int
+
+
+
+------------- Lists
+-- -- Laws
+-- withVals id xs == xs
+-- withKeys id xs == xs
+-- mapVal id xs == xs
+-- mapKey id xs == xs
+-- filterVal true xs == xs
+-- filterVal false xs == []
+
+at a :: [a] -> Int -> a
+break a :: (a -> Bool) -> [a] -> ([a], [a])
+concat a :: [[a]] -> [a]
+conmap a b :: (a -> [b]) -> [a] -> [b]
+contextFilterKey a b c :: (a -> b -> (a, Bool)) -> a -> [(b,c)] -> [(b,c)]
+contextFilterVal a b c :: (a -> b -> (a, Bool)) -> a -> [(c,b)] -> [(c,b)]
+drop a :: Int -> [a] -> [a]
+dropWhile a :: (a -> Bool) -> [a] -> [a]
+enumerateWith a b :: (a -> Int -> b) -> [a] -> [b]
+flip a b c :: (a -> b -> c) -> b -> a -> c
+fold a b :: (b -> a -> b) -> b -> [a] -> b
+get a :: Int -> [a] -> a -- get 1 [1,2,3] => 2
+head a :: [a] -> a -- [1,2,3] => 1
+init a :: [a] -> [a] -- [1,2,3] => [1,2]
+join a :: [a] -> [a] -> [a]
+cons a :: a -> [a] -> [a]
+append a :: [a] -> a -> [a]
+last a :: [a] -> a -- [1,2,3] => 3
+length a :: [a] -> Int
+lookup k v :: k -> [(k, v)] -> v
+map a b :: (a -> b) -> [a] -> [b]
+filter a :: (a -> Bool) -> [a] -> [a]
+replicate a :: Int -> a -> [a]
+reverse a :: [a] -> [a]
+scanl a b :: (b -> a -> b) -> b -> [a] -> [b]
+scanl1 a :: (a -> a -> a) -> [a] -> [a]
+scanr a b :: (a -> b -> b) -> b -> [a] -> [b]
+scanr1 a :: (a -> a -> a) -> [a] -> [a]
+shard a :: Int -> [a] -> [[a]]
+span a :: (a -> Bool) -> [a] -> ([a], [a])
+splitAt a :: Int -> [a] -> ([a], [a])
+tail a :: [a] -> [a] -- [1,2,3] => [2,3]
+take a :: Int -> [a] -> [a]
+takeWhile a :: (a -> Bool) -> [a] -> [a]
+unique a :: [a] -> [a]
+until a :: (a -> Bool) -> (a -> a) -> a -> a
+unzip a b :: [(a, b)] -> ([a], [b])
+withFsts a b c :: ([a] -> [b]) -> [(a, c)] -> [(b, c)]
+withSnds a b c :: ([a] -> [b]) -> [(c, a)] -> [(c, b)]
+zip a b :: [a] -> [b] -> [(a, b)]
+zipWith a b c :: (a -> b -> c) -> [a] -> [b] -> [c]
+elem a :: a -> [a] -> Bool
+
+-- comparators
+not :: Bool -> Bool
+and :: Bool -> Bool -> Bool
+or :: Bool -> Bool -> Bool
+
+------------- Maps
+
+keys k v :: Map k v -> [k]
+vals k v :: Map k v -> [v]
+mapKey k v k' :: (k -> k') -> Map k v -> Map k' v
+mapVal k v v' :: (v -> v') -> Map k v -> Map k  v'
+filterKey k v :: (k -> Bool) -> Map k v -> Map k v
+filterVal k v :: (v -> Bool) -> Map k v -> Map k v
+readMap :: Filename -> Map Str Str
+fromList k v :: [(k,v)] -> Map k v
