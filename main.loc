@@ -97,7 +97,6 @@ dropWhile a :: (a -> Bool) -> [a] -> [a]
 enumerateWith a b :: (a -> Int -> b) -> [a] -> [b]
 flip a b c :: (a -> b -> c) -> b -> a -> c
 fold a b :: (b -> a -> b) -> b -> [a] -> b
-get a :: Int -> [a] -> a -- get 1 [1,2,3] => 2
 head a :: [a] -> a -- [1,2,3] => 1
 init a :: [a] -> [a] -- [1,2,3] => [1,2]
 join a :: [a] -> [a] -> [a]
