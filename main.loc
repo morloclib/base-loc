@@ -1,4 +1,4 @@
-module conventions (*)
+module base (*)
 
 -- NOTE: `forall` statements that explicitly order the generic terms are necessary
 -- when the parse order of the generic terms does not match the template argument
