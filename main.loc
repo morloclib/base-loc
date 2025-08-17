@@ -1,4 +1,4 @@
-module base (*)
+module root (*)
 
 -- NOTE: `forall` statements that explicitly order the generic terms are necessary
 -- when the parse order of the generic terms does not match the template argument
@@ -29,6 +29,125 @@ import types
 --  * text
 --
 -- -}
+
+------------- Classes
+
+class Sized a where
+  size a :: a -> Int
+
+class Show a where
+  show a :: a -> Str
+
+class Ord a where
+  le a :: a -> a -> Bool
+  lt a :: a -> a -> Bool
+  ge a :: a -> a -> Bool
+  gt a :: a -> a -> Bool
+
+  -- lt x y = and (le x y) (not (le y x))
+  -- ge x y = le y x
+  -- gt x y = and (le y x) (not (le x y))
+
+class Eq a where
+  eq a :: a -> a -> Bool
+  ne a :: a -> a -> Bool
+
+  -- ne = not . eq
+
+not :: Bool -> Bool
+and :: Bool -> Bool -> Bool
+or  :: Bool -> Bool -> Bool
+
+class Addable a where
+  zero a :: a
+  one a :: a
+  add a :: a -> a -> a
+  mul a :: a -> a -> a
+  mod a :: a -> a -> a
+  div a :: a -> a -> a
+
+class Subtractable a where
+  neg a :: a -> a
+  sub a :: a -> a -> a
+
+
+-- class Semigroup a where
+--     (<>) :: a -> a -> a
+--
+-- class HasZero a where
+--     zero :: a
+--
+-- class Functor f where
+--     map :: (a -> b) -> f a -> f b
+--
+-- class HasInverse a where
+--     inverse :: a -> a where
+--         {inverse (inverse x) == x and (inverse x) != x; x <- a unless x == zero}
+--         inverse zero == zero
+--
+-- class HasNegative a where
+--     neg :: a -> a
+--
+-- class (Semigroup m, HasZero m) => Monoid m
+--
+-- class (Monoid a, HasInverse a) => Ring a
+--
+-- class (Functor f) => Applicative f where
+--     pure :: a -> f a
+--     (<*>) :: f (a -> b) -> f a -> f b
+--
+-- class (Applicative m) => Monad m where
+--     (>>=) :: m a -> (a -> m b) -> m b
+--
+-- class Foldable t where
+--     foldMap :: Monoid m => (a -> m) -> t a -> m
+--     length :: t a -> Int
+--
+-- class (FiniteSet f, Functor f) => Sequential f a Int where
+--     at :: f a n -> k:Int -> a where
+--         0 <= k < n
+--     head :: f a {k; k > 0} -> a
+--     take :: Int -> f a -> f a
+--     drop :: Int -> f a -> f a
+--
+-- class TableLike t where
+--     nrow :: t -> Int
+--     ncol :: t -> Int
+--
+-- class (HasZero a) => Nat a where
+--     zero = 0
+--
+-- class Num a where
+--     (+) :: a -> a -> a
+--     (-) :: a -> a -> a
+--     (*) :: a -> a -> a
+--     negate :: a -> a
+--     abs :: a -> a
+--     sign :: a -> a
+--     fromInteger :: Int -> a
+--
+-- class Num a => Fractional a where
+--     (/) :: a -> a -> a
+--     fromRational :: Rational -> a
+--
+-- class (Real a, Enum a) => Integral a where
+--     div :: a -> a -> a
+--     mod :: a -> a -> a
+--     divMod :: a -> a -> (a, a)
+--     toInteger :: a -> Int
+--
+-- class (HasZero a, HasInverse a, HasNegative a) => Real a where
+--     zero = 0.0
+--     inverse x = 1 / x
+--     neg x = -1.0 * x
+--
+-- class (Functor f, Foldable f) => Traversable f where
+--     traverse :: Applicative f => (a -> f b) -> t a -> f (t b)
+--
+-- type List a k = Tensor a [k]
+-- type Matrix a n m = Tensor a [n,m]
+
+
 
 ------------- Effects
 sleep a :: Real -> a -> a
