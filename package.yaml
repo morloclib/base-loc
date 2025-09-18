@@ -1,11 +1,11 @@
-name: base
+name: root
 version: 0.0.0
-homepage: https://github.com/morloc-lib/base
-synopsis: Type signatures that are imported and implemented in the language-specific bases
-description: This is totally experimental
+homepage: https://github.com/morloclib/root
+synopsis: Define type signatures for common functions
+description: A set of function definitions for operating on functions, primitives and basic containers.
 category: language-base
 license: MIT
 author: "Zebulun Arendsee"
-maintainer: "zbwrnz@gmail.com"
-github: https://github.com/morloc-lib/base
-bug-reports: https://github.com/morloc-lib/base
+maintainer: "z@morloc.io"
+github: https://github.com/morloclib/root
+bug-reports: https://github.com/morloclib/root

@@ -1,264 +1,240 @@
 module root (*)
 
--- NOTE: `forall` statements that explicitly order the generic terms are necessary
--- when the parse order of the generic terms does not match the template argument
--- order of the C++ implementations. For consistency, I will explicitly declare the
--- terms in all generic functions.
+import internal
 
-import types
+type Filename = Str
 
--- {-
---
--- This package is too big. It is hard to draw a line at what fits in and what
--- doesn't. So much depends on domain. So it may make more sense to break
--- everything down into smaller packages.
---
---  * math
---  * stat
---  * ml
---  * combinators
---  * containers
---    * list
---    * tuple
---    * map
---    * set
---    * maybe
---    * either
---  * binary
---  * string
---  * text
---
--- -}
+type Cpp => Filename = "std::string"
+type Cpp => Unit = "mlc::Unit" -- this is an enum with a single element, NOT `void`, which corresponds to bottom
+type Cpp => Real = "double"
+type Cpp => Int = "int"
+type Cpp => Str = "std::string"
+type Cpp => Bool = "bool"
+type Cpp => (Map a b) = "std::map<$1,$2>" a b
+type Cpp => (List a) = "std::vector<$1>" a
+type Cpp => (Tuple2 a b) = "std::tuple<$1,$2>" a b
+type Cpp => (Tuple3 a b c) = "std::tuple<$1,$2,$3>" a b c
+type Cpp => (Tuple4 a b c d) = "std::tuple<$1,$2,$3,$4>" a b c d
+type Cpp => (Tuple5 a b c d e) = "std::tuple<$1,$2,$3,$4,$5>" a b c d e
+type Cpp => (Tuple6 a b c d e f) = "std::tuple<$1,$2,$3,$4,$5,$6>" a b c d e f
+type Cpp => (Tuple7 a b c d e f g) = "std::tuple<$1,$2,$3,$4,$5,$6,$7>" a b c d e f g
+type Cpp => (Tuple8 a b c d e f g h) = "std::tuple<$1,$2,$3,$4,$5,$6,$7,$8>" a b c d e f g h
 
-------------- Classes
+type Py => Filename = "str"
+type Py => Unit = "None"
+type Py => Real = "float"
+type Py => Int = "int"
+type Py => Str = "str"
+type Py => Bool = "bool"
+type Py => (Map a b) = "dict[$1,$2]" a b
+type Py => (List a) = "list[$1]" a
+type Py => (Tuple2 a b) = "tuple[$1,$2]" a b
+type Py => (Tuple3 a b c) = "tuple[$1,$2,$3]" a b c
+type Py => (Tuple4 a b c d) = "tuple[$1,$2,$3,$4]" a b c d
+type Py => (Tuple5 a b c d e) = "tuple[$1,$2,$3,$4,$5]" a b c d e
+type Py => (Tuple6 a b c d e f) = "tuple[$1,$2,$3,$4,$5,$6]" a b c d e f
+type Py => (Tuple7 a b c d e f g) = "tuple[$1,$2,$3,$4,$5,$6,$7]" a b c d e f g
+type Py => (Tuple8 a b c d e f g h) = "tuple[$1,$2,$3,$4,$5,$6,$7,$8]" a b c d e f g h
 
-class Sized a where
-  size a :: a -> Int
-
-class Show a where
-  show a :: a -> Str
-
-class Ord a where
-  le a :: a -> a -> Bool
-  lt a :: a -> a -> Bool
-  ge a :: a -> a -> Bool
-  gt a :: a -> a -> Bool
-
-  -- lt x y = and (le x y) (not (le y x))
-  -- ge x y = le y x
-  -- gt x y = and (le y x) (not (le x y))
+type R => Filename = "character"
+type R => Unit = "NULL"
+type R => Int = "integer"
+type R => Real = "numeric"
+type R => Str = "character"
+type R => Bool = "logical"
+type R => (Map Str b) = "list" Str b
+type R => (List a) = "list" a
+type R => (Tuple2 a b) = "list" a b
+type R => (Tuple3 a b c) = "list" a b c
+type R => (Tuple4 a b c d) = "list" a b c d
+type R => (Tuple5 a b c d e) = "list" a b c d e
+type R => (Tuple6 a b c d e f) = "list" a b c d e f
+type R => (Tuple7 a b c d e f g) = "list" a b c d e f g
+type R => (Tuple8 a b c d e f g h) = "list" a b c d e f g h
 
 class Eq a where
   eq a :: a -> a -> Bool
-  ne a :: a -> a -> Bool
 
-  -- ne = not . eq
+ifelse a :: Bool -> a -> a -> a 
 
-not :: Bool -> Bool
-and :: Bool -> Bool -> Bool
-or  :: Bool -> Bool -> Bool
+class Ord a where
+  le a :: a -> a -> Bool
 
-class Addable a where
-  zero a :: a
-  one a :: a
-  add a :: a -> a -> a
-  mul a :: a -> a -> a
-  mod a :: a -> a -> a
-  div a :: a -> a -> a
+lt x y = and (le x y) (not (le y x))
+ge x y = le y x
+gt x y = and (le y x) (not (le x y))
 
-class Subtractable a where
+lesser a :: a -> a -> a
+lesser x y = ifelse (lt x y) x y
+
+greater a :: a -> a -> a
+greater x y = ifelse (lt x y) y x
+
+ne a :: a -> a -> Bool
+ne x y = not (eq x y)
+
+class Monoid a where
+  mempty a :: a
+  mappend a :: a -> a -> a
+
+class Integral a where
+  zero :: a
   neg a :: a -> a
+  add a :: a -> a -> a
   sub a :: a -> a -> a
 
+class Numeric a where
+  one :: a
+  inv a :: a -> a
+  mul a :: a -> a -> a 
+  div a :: a -> a -> a 
+  exp a :: a -> a -> a
+  log a :: a -> a -> a
 
--- class Semigroup a where
---     (<>) :: a -> a -> a
+class Foldable f where
+  fold f a b :: (b -> a -> b) -> b -> f a -> b
+
+-- O(n), you should probably provide a constant-time implementation for each type
+length f a :: f a -> Int
+length = fold (\b a -> add 1 b) 0
+
+class Functor f where
+  map f a b :: (a -> b) -> f a -> f b
+
+-- class Bifunctor f where
+--   bimap f a a' b b' :: (a -> a') -> (b -> b') -> f a b -> f a' b'
+--   onA f a a' b :: (a -> a') -> f a b -> f a' b
+--   onB f a b b' :: (b -> b') -> f a b -> f a b'
 --
--- class HasZero a where
---     zero :: a
---
--- class Functor f where
---     map :: (a -> b) -> f a -> f b
---
--- class HasInverse a where
---     inverse :: a -> a where
---         {inverse (inverse x) == x and (inverse x) != x; x <- a unless x == zero}
---         inverse zero == zero
---
--- class HasNegative a where
---     neg :: a -> a
---
--- class (Semigroup m, HasZero m) => Monoid m
---
--- class (Monoid a, HasInverse a) => Ring a
---
--- class (Functor f) => Applicative f where
---     pure :: a -> f a
---     (<*>) :: f (a -> b) -> f a -> f b
---
--- class (Applicative m) => Monad m where
---     (>>=) :: m a -> (a -> m b) -> m b
---
--- class Foldable t where
---     foldMap :: Monoid m => (a -> m) -> t a -> m
---     length :: t a -> Int
---
--- class (FiniteSet f, Functor f) => Sequential f a Int where
---     at :: f a n -> k:Int -> a where
---         0 <= k < n
---     head :: f a {k; k > 0} -> a
---     take :: Int -> f a -> f a
---     drop :: Int -> f a -> f a
---
--- class TableLike t where
---     nrow :: t -> Int
---     ncol :: t -> Int
---
--- class (HasZero a) => Nat a where
---     zero = 0
---
--- class Num a where
---     (+) :: a -> a -> a
---     (-) :: a -> a -> a
---     (*) :: a -> a -> a
---     negate :: a -> a
---     abs :: a -> a
---     sign :: a -> a
---     fromInteger :: Int -> a
---
--- class Num a => Fractional a where
---     (/) :: a -> a -> a
---     fromRational :: Rational -> a
---
--- class (Real a, Enum a) => Integral a where
---     div :: a -> a -> a
---     mod :: a -> a -> a
---     divMod :: a -> a -> (a, a)
---     toInteger :: a -> Int
---
--- class (HasZero a, HasInverse a, HasNegative a) => Real a where
---     zero = 0.0
---     inverse x = 1 / x
---     neg x = -1.0 * x
---
--- class (Functor f, Foldable f) => Traversable f where
---     traverse :: Applicative f => (a -> f b) -> t a -> f (t b)
---
--- type List a k = Tensor a [k]
--- type Matrix a n m = Tensor a [n,m]
+-- instance Bifunctor Tuple2 where
+--   bimap f g x = (f (fst x), g (snd x))
+--   onA f x = (f (fst x), snd x)
+--   onB g x = (fst x, g (snd x))
+
+-- all sequences are Addable, Foldable, Filterable and Functors
+-- they additionally have a defined order and are isomorphic to lists
+-- unlike functors, they can be split
+class Sequence f where
+    empty f a :: f a
+
+    -- at -1 [1,2,3] == FUCK!!!
+    -- at 0  [1,2,3] == 1
+    -- at 2  [1,2,3] == 3
+    -- at 4  [1,2,3] == FUCK!!!
+    at f a :: Int -> f a -> a
+
+    -- slice 0 0 [1,2,3] == []
+    -- slice 0 1 [1,2,3] == [1]
+    -- slice 1 0 [1,2,3] == []    -- this doesn't reverse
+    -- slice 1 3 [1,2,3] == [2,3]
+    -- slice 1 4 [1,2,3] == [2,3] -- length may not equal j - i
+    -- slice 3 4 [1,2,3] == []
+    slice f a :: Int -> Int -> f a -> f a
 
 
+-- warning: unsafe
+-- time: O(1)
+head f a :: f a -> a -- [1,2,3] => 1
+head xs = at 0 xs
 
-------------- Effects
-sleep a :: Real -> a -> a
+-- time: O(n)
+-- init [] == []
+-- init [1] == []
+-- init [1,2] == [1]
+-- init [1,2,3] == [1,2]
+init f a :: f a -> f a
+init xs = slice 0 (sub (length xs) 1) xs
 
-------------- Control
--- Whether this is eager or lazy depends on language
+-- last [] == undefined
+-- last [1] == 1
+-- last [1,2] == 2
+last f a :: f a -> a -- [1,2,3] => 3
+last xs = at (sub (length xs) 1) xs
 
-ifelse a :: Bool -> a -> a -> a
+-- tail [1,2,3] == [2,3]
+-- tail [1,2] == [2]
+-- tail [1] == []
+-- tail [] == []
+tail f a :: f a -> f a -- [1,2,3] => [2,3]
+tail xs = slice 1 (length xs) xs
 
--- like ifelse, but guaranteed to be lazy
-branch a b :: (a -> Bool) -> (a -> b) -> (a -> b) -> a -> b
-run a :: (() -> a) -> a
+-- take 0 [] = []
+-- take 1 [] = []
+-- take 0 [1,2,3] = []
+-- take 1 [1,2,3] = [1]
+-- take 2 [1,2,3] = [1,2]
+-- take 3 [1,2,3] = [1,2,3]
+-- take 4 [1,2,3] = [1,2,3]
+take f a :: Int -> f a -> f a
+take i xs = slice 0 i xs
 
-------------- Combinators and functions
+-- drop 0 [1,2,3] = [1,2,3]
+-- drop 1 [1,2,3] = [2,3]
+-- drop 2 [1,2,3] = [3]
+-- drop 3 [1,2,3] = []
+-- drop 4 [1,2,3] = []
+drop f a :: Int -> f a -> f a
+drop i xs = slice i (length xs) xs
+
+
+-- {{{ Combintators
+
 id a :: a -> a
+id x = x
+
 seq a b :: a -> b -> b
+seq x y = y
+
 const a b :: a -> b -> a
+const x y = x
+
+flip a b c :: (a -> b -> c) -> b -> a -> c
+flip f x y = f y x
+
+-- From the "To Mock a Mockingbird" aviary
+starling a b c d :: (b -> c -> d) -> (a -> b) -> (a -> c) -> a -> d
+starling bcd ab ac a = bcd (ab a) (ac a)
+
+-- }}}
+
+-- {{{ Boolenas
+
+and :: Bool -> Bool -> Bool
+or :: Bool -> Bool -> Bool
+not :: Bool -> Bool
+
+xor :: Bool -> Bool -> Bool
+xor x y = and (nand x y) (nand (not x) (not y))
+
+nand :: Bool -> Bool -> Bool
+nand x y = not (and x y)
+
+-- }}}
+
+-- {{{ Tuples
+
 fst a b :: (a, b) -> a
 snd a b :: (a, b) -> b
-
-{- While I don't want to make special accessors for every damn tuple, triples
-are special. They represent relations between things. I am tempted to names
-these three functions (s, p, and o) for "subject", "predicate", and
-"object". This is the convention in SPARQL circles. Anyone who wants to think of
-them that way, though, is free to use aliases. In the meantime, I will give them
-unopinionated names. -}
 fst3 a b c :: (a, b, c) -> a
 snd3 a b c :: (a, b, c) -> b
 thr3 a b c :: (a, b, c) -> c
 
-tuple a b :: a -> b -> (a, b)
 curry a b c :: ((a, b) -> c) -> a -> b -> c
+curry f x y = f (x, y)
+
+curry3 a b c d :: ((a, b, c) -> d) -> a -> b -> c -> d
+curry3 f x y z = f (x, y, z)
+
 uncurry a b c :: (a -> b -> c) -> (a, b) -> c
-onSnd a b b' :: (b -> b') -> (a, b) -> (a, b')
-onFst a b a' :: (a -> a') -> (a, b) -> (a', b)
+uncurry f xy = f (fst xy) (snd xy)
+
+uncurry3 a b c d :: (a -> b -> c -> d) -> (a, b, c) -> d
+uncurry3 f xyz = f (fst3 xyz) (snd3 xyz) (thr3 xyz)
+
 toSnd a b :: (a -> b) -> a -> (a, b)
+toSnd f x = (x, f x)
+
 toFst a b :: (a -> b) -> a -> (b, a)
+toFst f x = (f x, x)
 
-------------- Strings
-unlines :: [Str] -> Str
-words :: Str -> [Str]
-unwords :: [Str] -> Str
-paste :: Str -> [Str] -> Str
-lines :: Str -> [Str]
-lengthS :: Str -> Int
-
-
-
-------------- Lists
--- -- Laws
--- withVals id xs == xs
--- withKeys id xs == xs
--- mapVal id xs == xs
--- mapKey id xs == xs
--- filterVal true xs == xs
--- filterVal false xs == []
-
-at a :: [a] -> Int -> a
-break a :: (a -> Bool) -> [a] -> ([a], [a])
-concat a :: [[a]] -> [a]
-conmap a b :: (a -> [b]) -> [a] -> [b]
-contextFilterKey a b c :: (a -> b -> (a, Bool)) -> a -> [(b,c)] -> [(b,c)]
-contextFilterVal a b c :: (a -> b -> (a, Bool)) -> a -> [(c,b)] -> [(c,b)]
-drop a :: Int -> [a] -> [a]
-dropWhile a :: (a -> Bool) -> [a] -> [a]
-enumerateWith a b :: (a -> Int -> b) -> [a] -> [b]
-flip a b c :: (a -> b -> c) -> b -> a -> c
-fold a b :: (b -> a -> b) -> b -> [a] -> b
-head a :: [a] -> a -- [1,2,3] => 1
-init a :: [a] -> [a] -- [1,2,3] => [1,2]
-join a :: [a] -> [a] -> [a]
-cons a :: a -> [a] -> [a]
-append a :: [a] -> a -> [a]
-last a :: [a] -> a -- [1,2,3] => 3
-length a :: [a] -> Int
-lookup k v :: k -> [(k, v)] -> v
-map a b :: (a -> b) -> [a] -> [b]
-filter a :: (a -> Bool) -> [a] -> [a]
-replicate a :: Int -> a -> [a]
-reverse a :: [a] -> [a]
-scanl a b :: (b -> a -> b) -> b -> [a] -> [b]
-scanl1 a :: (a -> a -> a) -> [a] -> [a]
-scanr a b :: (a -> b -> b) -> b -> [a] -> [b]
-scanr1 a :: (a -> a -> a) -> [a] -> [a]
-shard a :: Int -> [a] -> [[a]]
-span a :: (a -> Bool) -> [a] -> ([a], [a])
-splitAt a :: Int -> [a] -> ([a], [a])
-tail a :: [a] -> [a] -- [1,2,3] => [2,3]
-take a :: Int -> [a] -> [a]
-takeWhile a :: (a -> Bool) -> [a] -> [a]
-unique a :: [a] -> [a]
-until a :: (a -> Bool) -> (a -> a) -> a -> a
-unzip a b :: [(a, b)] -> ([a], [b])
-withFsts a b c :: ([a] -> [b]) -> [(a, c)] -> [(b, c)]
-withSnds a b c :: ([a] -> [b]) -> [(c, a)] -> [(c, b)]
-zip a b :: [a] -> [b] -> [(a, b)]
-zipWith a b c :: (a -> b -> c) -> [a] -> [b] -> [c]
-elem a :: a -> [a] -> Bool
-
--- comparators
-not :: Bool -> Bool
-and :: Bool -> Bool -> Bool
-or :: Bool -> Bool -> Bool
-
-------------- Maps
-
-keys k v :: Map k v -> [k]
-vals k v :: Map k v -> [v]
-mapKey k v k' :: (k -> k') -> Map k v -> Map k' v
-mapVal k v v' :: (v -> v') -> Map k v -> Map k  v'
-filterKey k v :: (k -> Bool) -> Map k v -> Map k v
-filterVal k v :: (v -> Bool) -> Map k v -> Map k v
-readMap :: Filename -> Map Str Str
-fromList k v :: [(k,v)] -> Map k v
+-- }}}
