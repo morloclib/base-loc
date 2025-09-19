@@ -78,13 +78,13 @@ class Monoid a where
   mappend a :: a -> a -> a
 
 class Integral a where
-  zero :: a
+  zero a :: a
   neg a :: a -> a
   add a :: a -> a -> a
   sub a :: a -> a -> a
 
 class Numeric a where
-  one :: a
+  one a :: a
   inv a :: a -> a
   mul a :: a -> a -> a 
   div a :: a -> a -> a 
