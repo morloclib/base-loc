@@ -56,6 +56,7 @@ class Eq a where
   eq a :: a -> a -> Bool
 
 ifelse a :: Bool -> a -> a -> a 
+branch a :: (a -> Bool) -> (a -> b) -> (a -> b) -> a -> b
 
 class Ord a where
   le a :: a -> a -> Bool
