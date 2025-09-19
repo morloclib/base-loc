@@ -26,15 +26,15 @@ type Py => Real = "float"
 type Py => Int = "int"
 type Py => Str = "str"
 type Py => Bool = "bool"
-type Py => (Map a b) = "dict[$1,$2]" a b
-type Py => (List a) = "list[$1]" a
-type Py => (Tuple2 a b) = "tuple[$1,$2]" a b
-type Py => (Tuple3 a b c) = "tuple[$1,$2,$3]" a b c
-type Py => (Tuple4 a b c d) = "tuple[$1,$2,$3,$4]" a b c d
-type Py => (Tuple5 a b c d e) = "tuple[$1,$2,$3,$4,$5]" a b c d e
-type Py => (Tuple6 a b c d e f) = "tuple[$1,$2,$3,$4,$5,$6]" a b c d e f
-type Py => (Tuple7 a b c d e f g) = "tuple[$1,$2,$3,$4,$5,$6,$7]" a b c d e f g
-type Py => (Tuple8 a b c d e f g h) = "tuple[$1,$2,$3,$4,$5,$6,$7,$8]" a b c d e f g h
+type Py => (Map a b) = "dict" a b
+type Py => (List a) = "list" a
+type Py => (Tuple2 a b) = "tuple" a b
+type Py => (Tuple3 a b c) = "tuple" a b c
+type Py => (Tuple4 a b c d) = "tuple" a b c d
+type Py => (Tuple5 a b c d e) = "tuple" a b c d e
+type Py => (Tuple6 a b c d e f) = "tuple" a b c d e f
+type Py => (Tuple7 a b c d e f g) = "tuple" a b c d e f g
+type Py => (Tuple8 a b c d e f g h) = "tuple" a b c d e f g h
 
 type R => Filename = "character"
 type R => Unit = "NULL"
