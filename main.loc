@@ -132,6 +132,8 @@ class Sequence f where
     -- slice 3 4 [1,2,3] == []
     slice f a :: Int -> Int -> f a -> f a
 
+-- list-specific zip - should generalize, but this is used in tests
+zipWith a b c :: (a -> b -> c) -> [a] -> [b] -> [c]
 
 -- warning: unsafe
 -- time: O(1)
