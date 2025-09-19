@@ -82,11 +82,11 @@ class Integral a where
   neg a :: a -> a
   add a :: a -> a -> a
   sub a :: a -> a -> a
+  mul a :: a -> a -> a 
 
 class Numeric a where
   one a :: a
   inv a :: a -> a
-  mul a :: a -> a -> a 
   div a :: a -> a -> a 
   exp a :: a -> a -> a
   log a :: a -> a -> a
