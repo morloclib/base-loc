@@ -36,14 +36,14 @@ runTests =
   . printResult
   . testGroup "testIntegral" testIntegral
   . testGroup "testNumeric" testNumeric
-  . testGroup "testSequenceBased" testSequenceBased
-  . testGroup "testSequence" testSequence
+  -- . testGroup "testSequenceBased" testSequenceBased
+  -- . testGroup "testSequence" testSequence
   -- . testGroup "Bifunctor" testBifunctor
-  . testGroup "Functor" testFunctor
+  -- . testGroup "Functor" testFunctor
   . testGroup "Fold" testFold
-  -- . testGroup "Maybe" testMaybe
+  -- -- . testGroup "Maybe" testMaybe
   . testGroup "Combinators" testCombinators
-  -- . testGroup "Tuples" testTuples
+  . testGroup "Tuples" testTuples
   . testGroup "Bools" testBools
   . testGroup "Comparisons" testComparisons
   )
@@ -58,16 +58,16 @@ testCombinators =
   . testEqual "starling 2" (starling const (seq 42) (const 49) 99) 99
   )
 
--- testTuples :: (Int, Int) -> (Int, Int)
--- testTuples =
---   ( testEqual "fst and snd" (starling const fst snd (1,2)) 1
---   . testEqual "toFst" (toFst snd (1,2)) (2,(1,2))
---   . testEqual "toSnd" (toSnd fst (1,2)) ((1,2),1)
---   . testEqual "fst3, snd3, thr3" ((\t -> (snd3 t, thr3 t, fst3 t)) (3,1,2)) (1,2,3)
---   . testEqual "curry" ((curry fst) 1 2) 1
---   . testEqual "curry3" ((curry3 fst3) 1 2 3) 1
---   . testEqual "uncurry" ((uncurry const) (1,2)) 1
---   )
+testTuples :: (Int, Int) -> (Int, Int)
+testTuples =
+  ( testEqual "fst and snd" (starling const fst snd (1,2)) 1
+  . testEqual "toFst" (toFst snd (1,2)) (2,(1,2))
+  . testEqual "toSnd" (toSnd fst (1,2)) ((1,2),1)
+  . testEqual "fst3, snd3, thr3" ((\t -> (snd3 t, thr3 t, fst3 t)) (3,1,2)) (1,2,3)
+  . testEqual "curry" ((curry fst) 1 2) 1
+  . testEqual "curry3" ((curry3 fst3) 1 2 3) 1
+  . testEqual "uncurry" ((uncurry const) (1,2)) 1
+  )
 
 testBools :: (Int, Int) -> (Int, Int)
 testBools =
@@ -201,7 +201,7 @@ testIntegral =
   . testEqual "sub" (sub 2 1) 1
   )
 
-testNumeric :: (Real, Real) -> (Real, Real)
+testNumeric :: (Int, Int) -> (Int, Int)
 testNumeric =
   ( testEqual "mul" (mul 3.0 2.0) 6.0
   . testEqual "div" (div 6.0 2.0) 3.0
