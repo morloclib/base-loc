@@ -36,10 +36,10 @@ runTests =
   . printResult
   . testGroup "testIntegral" testIntegral
   . testGroup "testNumeric" testNumeric
-  -- . testGroup "testSequenceBased" testSequenceBased
-  -- . testGroup "testSequence" testSequence
+  . testGroup "testSequenceBased" testSequenceBased
+  . testGroup "testSequence" testSequence
   -- . testGroup "Bifunctor" testBifunctor
-  -- . testGroup "Functor" testFunctor
+  . testGroup "Functor" testFunctor
   . testGroup "Fold" testFold
   -- -- . testGroup "Maybe" testMaybe
   . testGroup "Combinators" testCombinators
@@ -158,19 +158,19 @@ testSequence =
 testSequenceBased :: (Int, Int) -> (Int, Int)
 testSequenceBased =
   ( testEqual "head [1]" (head [1]) 1
-  -- . testEqual "init []" (init []) []
-  . testEqual "init [1]" (init [1]) []
+  . testEqual "init []" (init ([] :: [Int]))  ([] :: [Int])
+  . testEqual "init [1]" (init [1]) ([] :: [Int])
   . testEqual "init [1,2]" (init [1,2]) [1]
   . testEqual "init [1,2,3]" (init [1,2,3]) [1,2]
   . testEqual "last [1]" (last [1]) 1
   . testEqual "last [1,2]" (last [1,2]) 2
   . testEqual "tail [1,2,3]" (tail [1,2,3]) [2,3]
   . testEqual "tail [1,2]" (tail [1,2]) [2]
-  . testEqual "tail [1]" (tail [1]) []
-  -- . testEqual "tail []" (tail []) []
-  -- . testEqual "take 0 []" (take 0 []) []
-  -- . testEqual "take 1 []" (take 1 []) []
-  . testEqual "take 0 [1,2,3]" (take 0 [1,2,3]) []
+  . testEqual "tail [1]" (tail [1]) ([] :: [Int])
+  . testEqual "tail []" (tail ([] :: [Int])) ([] :: [Int])
+  . testEqual "take 0 []" (take 0 ([] :: [Int])) ([] :: [Int])
+  . testEqual "take 1 []" (take 1 ([] :: [Int])) ([] :: [Int])
+  . testEqual "take 0 [1,2,3]" (take 0 [1,2,3]) ([] :: [Int])
   . testEqual "take 1 [1,2,3]" (take 1 [1,2,3]) [1]
   . testEqual "take 2 [1,2,3]" (take 2 [1,2,3]) [1,2]
   . testEqual "take 3 [1,2,3]" (take 3 [1,2,3]) [1,2,3]
@@ -178,8 +178,8 @@ testSequenceBased =
   . testEqual "drop 0 [1,2,3]" (drop 0 [1,2,3]) [1,2,3]
   . testEqual "drop 1 [1,2,3]" (drop 1 [1,2,3]) [2,3]
   . testEqual "drop 2 [1,2,3]" (drop 2 [1,2,3]) [3]
-  . testEqual "drop 3 [1,2,3]" (drop 3 [1,2,3]) []
-  . testEqual "drop 4 [1,2,3]" (drop 4 [1,2,3]) []
+  . testEqual "drop 3 [1,2,3]" (drop 3 [1,2,3]) ([] :: [Int])
+  . testEqual "drop 4 [1,2,3]" (drop 4 [1,2,3]) ([] :: [Int])
   -- . testEqual "flatten [[1],[3,4]]" (flatten [[1],[3,4]]) [1,3,4]
   )
 
