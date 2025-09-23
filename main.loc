@@ -4,54 +4,6 @@ import internal
 
 type Filename = Str
 
-type Cpp => Filename = "std::string"
-type Cpp => Unit = "mlc::Unit" -- this is an enum with a single element, NOT `void`, which corresponds to bottom
-type Cpp => Real = "double"
-type Cpp => Int = "int"
-type Cpp => Str = "std::string"
-type Cpp => Bool = "bool"
-type Cpp => (Map a b) = "std::map<$1,$2>" a b
-type Cpp => (List a) = "std::vector<$1>" a
-type Cpp => (Tuple2 a b) = "std::tuple<$1,$2>" a b
-type Cpp => (Tuple3 a b c) = "std::tuple<$1,$2,$3>" a b c
-type Cpp => (Tuple4 a b c d) = "std::tuple<$1,$2,$3,$4>" a b c d
-type Cpp => (Tuple5 a b c d e) = "std::tuple<$1,$2,$3,$4,$5>" a b c d e
-type Cpp => (Tuple6 a b c d e f) = "std::tuple<$1,$2,$3,$4,$5,$6>" a b c d e f
-type Cpp => (Tuple7 a b c d e f g) = "std::tuple<$1,$2,$3,$4,$5,$6,$7>" a b c d e f g
-type Cpp => (Tuple8 a b c d e f g h) = "std::tuple<$1,$2,$3,$4,$5,$6,$7,$8>" a b c d e f g h
-
-type Py => Filename = "str"
-type Py => Unit = "None"
-type Py => Real = "float"
-type Py => Int = "int"
-type Py => Str = "str"
-type Py => Bool = "bool"
-type Py => (Map a b) = "dict" a b
-type Py => (List a) = "list" a
-type Py => (Tuple2 a b) = "tuple" a b
-type Py => (Tuple3 a b c) = "tuple" a b c
-type Py => (Tuple4 a b c d) = "tuple" a b c d
-type Py => (Tuple5 a b c d e) = "tuple" a b c d e
-type Py => (Tuple6 a b c d e f) = "tuple" a b c d e f
-type Py => (Tuple7 a b c d e f g) = "tuple" a b c d e f g
-type Py => (Tuple8 a b c d e f g h) = "tuple" a b c d e f g h
-
-type R => Filename = "character"
-type R => Unit = "NULL"
-type R => Int = "integer"
-type R => Real = "numeric"
-type R => Str = "character"
-type R => Bool = "logical"
-type R => (Map Str b) = "list" Str b
-type R => (List a) = "list" a
-type R => (Tuple2 a b) = "list" a b
-type R => (Tuple3 a b c) = "list" a b c
-type R => (Tuple4 a b c d) = "list" a b c d
-type R => (Tuple5 a b c d e) = "list" a b c d e
-type R => (Tuple6 a b c d e f) = "list" a b c d e f
-type R => (Tuple7 a b c d e f g) = "list" a b c d e f g
-type R => (Tuple8 a b c d e f g h) = "list" a b c d e f g h
-
 class Eq a where
   eq a :: a -> a -> Bool
 
@@ -132,6 +84,7 @@ class Sequence f where
     -- slice 3 4 [1,2,3] == []
     slice f a :: Int -> Int -> f a -> f a
 
+
 -- list-specific zip - should generalize, but this is used in tests
 zipWith a b c :: (a -> b -> c) -> [a] -> [b] -> [c]
 
@@ -141,46 +94,21 @@ head f a :: f a -> a -- [1,2,3] => 1
 head xs = at 0 xs
 
 -- time: O(n)
--- init [] == []
--- init [1] == []
--- init [1,2] == [1]
--- init [1,2,3] == [1,2]
 init f a :: f a -> f a
 init xs = slice 0 (sub (length xs) 1) xs
 
--- last [] == undefined
--- last [1] == 1
--- last [1,2] == 2
 last f a :: f a -> a -- [1,2,3] => 3
 last xs = at (sub (length xs) 1) xs
 
--- tail [1,2,3] == [2,3]
--- tail [1,2] == [2]
--- tail [1] == []
--- tail [] == []
 tail f a :: f a -> f a -- [1,2,3] => [2,3]
 tail xs = slice 1 (length xs) xs
 
--- take 0 [] = []
--- take 1 [] = []
--- take 0 [1,2,3] = []
--- take 1 [1,2,3] = [1]
--- take 2 [1,2,3] = [1,2]
--- take 3 [1,2,3] = [1,2,3]
--- take 4 [1,2,3] = [1,2,3]
 take f a :: Int -> f a -> f a
 take i xs = slice 0 i xs
 
--- drop 0 [1,2,3] = [1,2,3]
--- drop 1 [1,2,3] = [2,3]
--- drop 2 [1,2,3] = [3]
--- drop 3 [1,2,3] = []
--- drop 4 [1,2,3] = []
 drop f a :: Int -> f a -> f a
 drop i xs = slice i (length xs) xs
 
-
--- {{{ Combintators
 
 id a :: a -> a
 id x = x
@@ -198,9 +126,6 @@ flip f x y = f y x
 starling a b c d :: (b -> c -> d) -> (a -> b) -> (a -> c) -> a -> d
 starling bcd ab ac a = bcd (ab a) (ac a)
 
--- }}}
-
--- {{{ Boolenas
 
 and :: Bool -> Bool -> Bool
 or :: Bool -> Bool -> Bool
@@ -212,9 +137,6 @@ xor x y = and (nand x y) (nand (not x) (not y))
 nand :: Bool -> Bool -> Bool
 nand x y = not (and x y)
 
--- }}}
-
--- {{{ Tuples
 
 fst a b :: (a, b) -> a
 snd a b :: (a, b) -> b
@@ -239,5 +161,3 @@ toSnd f x = (x, f x)
 
 toFst a b :: (a -> b) -> a -> (b, a)
 toFst f x = (f x, x)
-
--- }}}
