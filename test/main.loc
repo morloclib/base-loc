@@ -2,6 +2,14 @@ module root.test (test)
 
 import root
 
+type Py => Int = "int"
+type Py => Str = "str"
+type Py => Real = "float"
+type Py => Bool = "bool"
+type Py => Tuple2 a b = "tuple" a b
+type Py => Tuple3 a b c = "tuple" a b c
+type Py => List a = "list" a
+
 -------------------------------------------------------------------------------
 -- Test suite functions
 
