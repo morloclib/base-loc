@@ -16,18 +16,18 @@ def testEqual(msg, x, y, results):
     (ntests, nfails) = results
     if(x == y):
         print(f"  {msg} ... {good('PASS')}")
-        return (ntests + 1, nfails)
+        return (nfails, ntests + 1)
     else:
         print(f"  {msg} ... {bad('FAIL')}")
-        return (ntests + 1, nfails + 1)
+        return (nfails + 1, ntests + 1)
 
 def printMsg(msg, x):
     print(info(msg))
     return x
 
 def printResult(x):
-    if(x[1] == 0):
-        print(good(f"All {x[0]!s} tests pass"))
+    if(x[0] == 0):
+        print(good(f"All {x[1]!s} tests pass"))
     else:
-        print(bad(f"{x[1]!s}/{x[0]!s} tests failed"))
+        print(bad(f"{x[0]!s}/{x[1]!s} tests failed"))
     return x
