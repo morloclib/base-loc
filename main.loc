@@ -2,6 +2,8 @@ module root (*)
 
 import internal
 
+-- {{{ Type definitions
+
 -- declaring these types here allow imports of types from roots
 type Unit
 type Real
@@ -19,6 +21,68 @@ type Tuple7 a b c d e f g
 type Tuple8 a b c d e f g h
 
 type Filename = Str
+
+-- }}}
+-- {{{ Combinators
+
+id a :: a -> a
+id x = x
+
+seq a b :: a -> b -> b
+seq x y = y
+
+const a b :: a -> b -> a
+const x y = x
+
+flip a b c :: (a -> b -> c) -> b -> a -> c
+flip f x y = f y x
+
+-- From the "To Mock a Mockingbird" aviary
+starling a b c d :: (b -> c -> d) -> (a -> b) -> (a -> c) -> a -> d
+starling bcd ab ac a = bcd (ab a) (ac a)
+
+-- }}}
+-- {{{ Boolean
+
+and :: Bool -> Bool -> Bool
+or :: Bool -> Bool -> Bool
+not :: Bool -> Bool
+
+xor :: Bool -> Bool -> Bool
+xor x y = and (nand x y) (nand (not x) (not y))
+
+nand :: Bool -> Bool -> Bool
+nand x y = not (and x y)
+
+-- }}}
+-- {{{ Tuples
+
+fst a b :: (a, b) -> a
+snd a b :: (a, b) -> b
+fst3 a b c :: (a, b, c) -> a
+snd3 a b c :: (a, b, c) -> b
+thr3 a b c :: (a, b, c) -> c
+
+curry a b c :: ((a, b) -> c) -> a -> b -> c
+curry f x y = f (x, y)
+
+curry3 a b c d :: ((a, b, c) -> d) -> a -> b -> c -> d
+curry3 f x y z = f (x, y, z)
+
+uncurry a b c :: (a -> b -> c) -> (a, b) -> c
+uncurry f xy = f (fst xy) (snd xy)
+
+uncurry3 a b c d :: (a -> b -> c -> d) -> (a, b, c) -> d
+uncurry3 f xyz = f (fst3 xyz) (snd3 xyz) (thr3 xyz)
+
+toSnd a b :: (a -> b) -> a -> (a, b)
+toSnd f x = (x, f x)
+
+toFst a b :: (a -> b) -> a -> (b, a)
+toFst f x = (f x, x)
+
+-- }}}
+-- {{{ Typeclasses
 
 class Eq a where
   eq a :: a -> a -> Bool
@@ -125,55 +189,4 @@ take i xs = slice 0 i xs
 drop f a :: Int -> f a -> f a
 drop i xs = slice i (length xs) xs
 
-
-id a :: a -> a
-id x = x
-
-seq a b :: a -> b -> b
-seq x y = y
-
-const a b :: a -> b -> a
-const x y = x
-
-flip a b c :: (a -> b -> c) -> b -> a -> c
-flip f x y = f y x
-
--- From the "To Mock a Mockingbird" aviary
-starling a b c d :: (b -> c -> d) -> (a -> b) -> (a -> c) -> a -> d
-starling bcd ab ac a = bcd (ab a) (ac a)
-
-
-and :: Bool -> Bool -> Bool
-or :: Bool -> Bool -> Bool
-not :: Bool -> Bool
-
-xor :: Bool -> Bool -> Bool
-xor x y = and (nand x y) (nand (not x) (not y))
-
-nand :: Bool -> Bool -> Bool
-nand x y = not (and x y)
-
-
-fst a b :: (a, b) -> a
-snd a b :: (a, b) -> b
-fst3 a b c :: (a, b, c) -> a
-snd3 a b c :: (a, b, c) -> b
-thr3 a b c :: (a, b, c) -> c
-
-curry a b c :: ((a, b) -> c) -> a -> b -> c
-curry f x y = f (x, y)
-
-curry3 a b c d :: ((a, b, c) -> d) -> a -> b -> c -> d
-curry3 f x y z = f (x, y, z)
-
-uncurry a b c :: (a -> b -> c) -> (a, b) -> c
-uncurry f xy = f (fst xy) (snd xy)
-
-uncurry3 a b c d :: (a -> b -> c -> d) -> (a, b, c) -> d
-uncurry3 f xyz = f (fst3 xyz) (snd3 xyz) (thr3 xyz)
-
-toSnd a b :: (a -> b) -> a -> (a, b)
-toSnd f x = (x, f x)
-
-toFst a b :: (a -> b) -> a -> (b, a)
-toFst f x = (f x, x)
+-- }}}
