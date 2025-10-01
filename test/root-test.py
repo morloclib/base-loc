@@ -13,7 +13,7 @@ def info(msg):
     return f"{BLUE}{msg}{RESET}"
 
 def testEqual(msg, x, y, results):
-    (ntests, nfails) = results
+    (nfails, ntests) = results
     if(x == y):
         print(f"  {msg} ... {good('PASS')}")
         return (nfails, ntests + 1)
